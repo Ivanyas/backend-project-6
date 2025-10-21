@@ -70,6 +70,40 @@ describe('test users CRUD', () => {
     expect(user).toMatchObject(expected);
   });
 
+  it('edit', async () => {
+    const user = await models.user.query().findOne({ email: testData.users.existing.email });
+    const response = await app.inject({
+      method: 'GET',
+      url: app.reverse('editUser', { id: user.id }),
+    });
+
+    expect(response.statusCode).toBe(302); // Redirect to login due to authentication
+  });
+
+  it('update', async () => {
+    const user = await models.user.query().findOne({ email: testData.users.existing.email });
+    const params = testData.users.update;
+    const response = await app.inject({
+      method: 'PATCH',
+      url: `/users/${user.id}`,
+      payload: {
+        data: params,
+      },
+    });
+
+    expect(response.statusCode).toBe(302); // Redirect to login due to authentication
+  });
+
+  it('delete', async () => {
+    const user = await models.user.query().findOne({ email: testData.users.new.email });
+    const response = await app.inject({
+      method: 'DELETE',
+      url: `/users/${user.id}`,
+    });
+
+    expect(response.statusCode).toBe(302); // Redirect to login due to authentication
+  });
+
   afterEach(async () => {
     // Пока Segmentation fault: 11
     // после каждого теста откатываем миграции

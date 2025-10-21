@@ -17,6 +17,7 @@ export default (app) => {
         const errors = {
           email: [{ message: i18next.t('flash.session.create.error') }],
         };
+        req.flash('error', i18next.t('flash.session.create.error'));
         reply.render('session/new', { signInForm, errors });
         return reply;
       }

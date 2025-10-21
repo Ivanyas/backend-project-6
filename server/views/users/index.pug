@@ -5,11 +5,21 @@ block content
     thead
       tr
         th= t('views.users.id')
+        th First name
+        th Last name
         th= t('views.users.email')
         th= t('views.users.createdAt')
+        th Actions
     tbody
       each user in users
         tr
           td= user.id
+          td= user.firstName
+          td= user.lastName
           td= user.email
           td= formatDate(user.createdAt)
+          td
+            if isAuthenticated() && user.id === currentUser.id
+              a(href=`/users/${user.id}/edit`) Edit
+              |  
+              +buttonTo(`/users/${user.id}`, 'delete')(class='btn btn-link p-0 ms-2' value='Delete')
