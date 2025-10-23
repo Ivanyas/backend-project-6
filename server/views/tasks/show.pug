@@ -1,0 +1,34 @@
+extends ../layouts/application.pug
+
+block content
+  .d-flex.justify-content-between.align-items-center.mb-3
+    h1= task.name
+    if isAuthenticated() && task.creatorId === currentUser.id
+      .btn-group
+        a.btn.btn-outline-primary(href=`/tasks/${task.id}/edit`)= t('views.tasks.edit')
+        +buttonTo(`/tasks/${task.id}`, 'delete')(class='btn btn-outline-danger' value=t('views.tasks.delete'))
+  
+  .row
+    .col-md-8
+      .card
+        .card-body
+          h5.card-title= t('views.tasks.description')
+          p.card-text= task.description || t('views.tasks.noDescription')
+    
+    .col-md-4
+      .card
+        .card-body
+          h5.card-title= t('views.tasks.details')
+          table.table.table-sm
+            tr
+              th= t('views.tasks.status')
+              td= task.status.name
+            tr
+              th= t('views.tasks.creator')
+              td= task.creator.firstName + ' ' + task.creator.lastName
+            tr
+              th= t('views.tasks.executor')
+              td= task.executor ? (task.executor.firstName + ' ' + task.executor.lastName) : t('views.tasks.noExecutor')
+            tr
+              th= t('views.tasks.createdAt')
+              td= formatDate(task.createdAt)

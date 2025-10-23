@@ -1,0 +1,24 @@
+extends ../layouts/application.pug
+
+block content
+  .d-flex.justify-content-between.align-items-center.mb-3
+    h1= t('views.taskStatuses.title')
+    if isAuthenticated()
+      a.btn.btn-primary(href=route('newStatus'))= t('views.taskStatuses.new')
+  table.table.table-striped
+    thead
+      tr
+        th= t('views.taskStatuses.id')
+        th= t('views.taskStatuses.name')
+        th= t('views.taskStatuses.createdAt')
+        th= t('views.taskStatuses.actions')
+    tbody
+      each taskStatus in taskStatuses
+        tr
+          td= taskStatus.id
+          td= taskStatus.name
+          td= formatDate(taskStatus.createdAt)
+          td
+            if isAuthenticated()
+              a.btn.btn-sm.btn-outline-primary.me-2(href=`/statuses/${taskStatus.id}/edit`)= t('views.taskStatuses.edit')
+              +buttonTo(`/statuses/${taskStatus.id}`, 'delete')(class='btn btn-sm btn-outline-danger' value=t('views.taskStatuses.delete'))

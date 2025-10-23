@@ -18,5 +18,16 @@
       "email": "updated@example.com",
       "password": "newpassword123"
     }
+  },
+  "taskStatuses": {
+    "new": {
+      "name": "новый"
+    },
+    "existing": {
+      "name": "в работе"
+    },
+    "update": {
+      "name": "обновленный статус"
+    }
   }
 }
