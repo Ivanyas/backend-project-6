@@ -1,0 +1,28 @@
+extends ../layouts/application.pug
+
+block content
+  .d-flex.justify-content-between.align-items-center.mb-3
+    h1= t('views.labels.title')
+    if isAuthenticated()
+      a.btn.btn-primary(href=route('newLabel'))= t('views.labels.new')
+  
+  table.table.table-striped
+    thead
+      tr
+        th= t('views.labels.id')
+        th= t('views.labels.name')
+        th= t('views.labels.tasksCount')
+        th= t('views.labels.createdAt')
+        th= t('views.labels.actions')
+    tbody
+      each label in labels
+        tr
+          td= label.id
+          td= label.name
+          td= label.tasks ? label.tasks.length : 0
+          td= formatDate(label.createdAt)
+          td
+            if isAuthenticated()
+              a.btn.btn-sm.btn-outline-primary.me-2(href=`/labels/${label.id}/edit`)= t('views.labels.edit')
+              +buttonTo(`/labels/${label.id}`, 'delete')(class='btn btn-sm btn-outline-danger' value=t('views.labels.delete'))
+

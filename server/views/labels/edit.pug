@@ -1,0 +1,16 @@
+extends ../layouts/application.pug
+
+block header
+  = t('views.labels.edit')
+
+block content
+  +formFor()(action=`/labels/${label.id}` method='post')
+    input(type='hidden' name='_method' value='patch')
+    +input(label, 'name', errors)(type="text")
+    
+    if label.tasks && label.tasks.length > 0
+      .alert.alert-info
+        = t('views.labels.tasksLinked', { count: label.tasks.length })
+    
+    +submit(label)(value=t('views.labels.submit'))
+

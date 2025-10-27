@@ -55,6 +55,21 @@ export default {
           success: 'Task deleted successfully',
         },
       },
+      labels: {
+        create: {
+          error: 'Failed to create label',
+          success: 'Label created successfully',
+        },
+        update: {
+          error: 'Failed to update label',
+          success: 'Label updated successfully',
+        },
+        delete: {
+          error: 'Failed to delete label',
+          success: 'Label deleted successfully',
+          linkedError: 'Label is linked to tasks and cannot be deleted',
+        },
+      },
       authError: 'Access denied! Please login',
       validation: {
         name: 'Name is required',
@@ -62,16 +77,17 @@ export default {
         statusId: 'Status is required',
       },
     },
-    layouts: {
-      application: {
-        users: 'Users',
-        taskStatuses: 'Task Statuses',
-        tasks: 'Tasks',
-        signIn: 'Login',
-        signUp: 'Register',
-        signOut: 'Logout',
+      layouts: {
+        application: {
+          users: 'Users',
+          taskStatuses: 'Task Statuses',
+          tasks: 'Tasks',
+          labels: 'Labels',
+          signIn: 'Login',
+          signUp: 'Register',
+          signOut: 'Logout',
+        },
       },
-    },
     views: {
       session: {
         new: {
@@ -113,6 +129,7 @@ export default {
         status: 'Status',
         creator: 'Creator',
         executor: 'Executor',
+        labels: 'Labels',
         createdAt: 'Created at',
         actions: 'Actions',
         new: 'New Task',
@@ -124,6 +141,19 @@ export default {
         noDescription: 'No description',
         noExecutor: 'Not assigned',
         details: 'Details',
+      },
+      labels: {
+        title: 'Labels',
+        id: 'ID',
+        name: 'Name',
+        tasksCount: 'Tasks count',
+        createdAt: 'Created at',
+        actions: 'Actions',
+        new: 'New Label',
+        edit: 'Edit Label',
+        delete: 'Delete',
+        submit: 'Save',
+        tasksLinked: 'This label is linked to {{count}} task(s)',
       },
       welcome: {
         index: {

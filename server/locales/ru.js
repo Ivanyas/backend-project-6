@@ -55,6 +55,21 @@ export default {
           success: 'Задача удалена',
         },
       },
+      labels: {
+        create: {
+          error: 'Не удалось создать метку',
+          success: 'Метка успешно создана',
+        },
+        update: {
+          error: 'Не удалось обновить метку',
+          success: 'Метка успешно обновлена',
+        },
+        delete: {
+          error: 'Не удалось удалить метку',
+          success: 'Метка удалена',
+          linkedError: 'Метка связана с задачами и не может быть удалена',
+        },
+      },
       authError: 'Доступ запрещён! Пожалуйста, авторизируйтесь.',
       validation: {
         firstName: 'Имя обязательно для заполнения',
@@ -70,16 +85,17 @@ export default {
         statusId: 'Статус обязателен для выбора',
       },
     },
-    layouts: {
-      application: {
-        users: 'Пользователи',
-        taskStatuses: 'Статусы задач',
-        tasks: 'Задачи',
-        signIn: 'Вход',
-        signUp: 'Регистрация',
-        signOut: 'Выход',
+      layouts: {
+        application: {
+          users: 'Пользователи',
+          taskStatuses: 'Статусы задач',
+          tasks: 'Задачи',
+          labels: 'Метки',
+          signIn: 'Вход',
+          signUp: 'Регистрация',
+          signOut: 'Выход',
+        },
       },
-    },
     views: {
       session: {
         new: {
@@ -121,6 +137,7 @@ export default {
         status: 'Статус',
         creator: 'Автор',
         executor: 'Исполнитель',
+        labels: 'Метки',
         createdAt: 'Дата создания',
         actions: 'Действия',
         new: 'Новая задача',
@@ -132,6 +149,19 @@ export default {
         noDescription: 'Нет описания',
         noExecutor: 'Не назначен',
         details: 'Детали',
+      },
+      labels: {
+        title: 'Метки',
+        id: 'ID',
+        name: 'Название',
+        tasksCount: 'Количество задач',
+        createdAt: 'Дата создания',
+        actions: 'Действия',
+        new: 'Новая метка',
+        edit: 'Редактирование метки',
+        delete: 'Удалить',
+        submit: 'Сохранить',
+        tasksLinked: 'Эта метка связана с {{count}} задачей (задачами)',
       },
       welcome: {
         index: {
