@@ -5,6 +5,42 @@ block content
     h1= t('views.tasks.title')
     if isAuthenticated()
       a.btn.btn-primary(href=route('newTask'))= t('views.tasks.new')
+  
+  // Filter form
+  form.mb-4(action=route('tasks') method='get')
+    .row.g-3
+      .col-md-3
+        label.form-label= t('views.tasks.status')
+        select.form-select(name='status')
+          option(value='')= t('views.tasks.allStatuses')
+          each status in statuses
+            option(value=status.id selected=(filters.status == status.id))= status.name
+      
+      .col-md-3
+        label.form-label= t('views.tasks.executor')
+        select.form-select(name='executor')
+          option(value='')= t('views.tasks.allExecutors')
+          each user in users
+            option(value=user.id selected=(filters.executor == user.id))= user.firstName + ' ' + user.lastName
+      
+      .col-md-3
+        label.form-label= t('views.tasks.labels')
+        select.form-select(name='label')
+          option(value='')= t('views.tasks.allLabels')
+          each label in labels
+            option(value=label.id selected=(filters.label == label.id))= label.name
+      
+      .col-md-3
+        if isAuthenticated()
+          label.form-label= t('views.tasks.createdByMe')
+          select.form-select(name='createdByMe')
+            option(value='')= t('views.tasks.allTasks')
+            option(value='1' selected=(filters.createdByMe))= t('views.tasks.myTasks')
+      
+      .col-md-12
+        button.btn.btn-primary.me-2(type='submit')= t('views.tasks.filter')
+        a.btn.btn-secondary(href=route('tasks'))= t('views.tasks.reset')
+  
   table.table.table-striped
     thead
       tr
@@ -13,6 +49,7 @@ block content
         th= t('views.tasks.status')
         th= t('views.tasks.creator')
         th= t('views.tasks.executor')
+        th= t('views.tasks.labels')
         th= t('views.tasks.createdAt')
         th= t('views.tasks.actions')
     tbody
@@ -24,6 +61,12 @@ block content
           td= task.status.name
           td= task.creator.firstName + ' ' + task.creator.lastName
           td= task.executor ? (task.executor.firstName + ' ' + task.executor.lastName) : '-'
+          td
+            if task.labels && task.labels.length > 0
+              each label in task.labels
+                span.badge.bg-secondary.me-1= label.name
+            else
+              | -
           td= formatDate(task.createdAt)
           td
             if isAuthenticated() && task.creatorId === currentUser.id

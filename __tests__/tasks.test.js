@@ -264,6 +264,174 @@ describe('test tasks CRUD', () => {
     expect(deletedTask).toBeUndefined();
   });
 
+  describe('filter', () => {
+    let testStatus2;
+    let testUser2;
+    let testLabel;
+
+    beforeEach(async () => {
+      // Clean up test data
+      await models.task.query().delete();
+      
+      // Create additional test data
+      testStatus2 = await models.taskStatus.query().insert({
+        name: 'в работе',
+      });
+      
+      // Check if testUser2 already exists, if not create it
+      testUser2 = await models.user.query().findOne({ email: 'john@example.com' });
+      if (!testUser2) {
+        testUser2 = await models.user.query().insert({
+          firstName: 'John',
+          lastName: 'Doe',
+          email: 'john@example.com',
+          passwordDigest: encrypt('password123'),
+        });
+      }
+      
+      testLabel = await models.label.query().insert({
+        name: 'bug',
+      });
+    });
+
+    it('filter by status', async () => {
+      const task1 = await models.task.query().insert({
+        name: 'Task 1',
+        statusId: testStatus.id,
+        creatorId: testUser.id,
+      });
+      
+      const task2 = await models.task.query().insert({
+        name: 'Task 2',
+        statusId: testStatus2.id,
+        creatorId: testUser.id,
+      });
+      
+      const response = await app.inject({
+        method: 'GET',
+        url: `/tasks?status=${testStatus.id}`,
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toContain('Task 1');
+      expect(response.body).not.toContain('Task 2');
+    });
+
+    it('filter by executor', async () => {
+      const task1 = await models.task.query().insert({
+        name: 'Task 1',
+        statusId: testStatus.id,
+        creatorId: testUser.id,
+        executorId: testUser.id,
+      });
+      
+      const task2 = await models.task.query().insert({
+        name: 'Task 2',
+        statusId: testStatus.id,
+        creatorId: testUser.id,
+        executorId: testUser2.id,
+      });
+      
+      const response = await app.inject({
+        method: 'GET',
+        url: `/tasks?executor=${testUser.id}`,
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toContain('Task 1');
+      expect(response.body).not.toContain('Task 2');
+    });
+
+    it('filter by label', async () => {
+      const task1 = await models.task.query().insert({
+        name: 'Task 1',
+        statusId: testStatus.id,
+        creatorId: testUser.id,
+      });
+      
+      const task2 = await models.task.query().insert({
+        name: 'Task 2',
+        statusId: testStatus.id,
+        creatorId: testUser.id,
+      });
+      
+      // Link label to task1
+      await task1.$relatedQuery('labels').relate(testLabel.id);
+      
+      const response = await app.inject({
+        method: 'GET',
+        url: `/tasks?label=${testLabel.id}`,
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toContain('Task 1');
+      expect(response.body).not.toContain('Task 2');
+    });
+
+    it('filter by createdByMe', async () => {
+      const task1 = await models.task.query().insert({
+        name: 'Task 1',
+        statusId: testStatus.id,
+        creatorId: testUser.id,
+      });
+      
+      const task2 = await models.task.query().insert({
+        name: 'Task 2',
+        statusId: testStatus.id,
+        creatorId: testUser2.id,
+      });
+      
+      const cookies = await authenticateUser();
+      const response = await app.inject({
+        method: 'GET',
+        url: '/tasks?createdByMe=1',
+        cookies,
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toContain('Task 1');
+      expect(response.body).not.toContain('Task 2');
+    });
+
+    it('filter by multiple criteria', async () => {
+      const task1 = await models.task.query().insert({
+        name: 'Task 1',
+        statusId: testStatus.id,
+        creatorId: testUser.id,
+        executorId: testUser.id,
+      });
+      
+      // Link label to task1
+      await task1.$relatedQuery('labels').relate(testLabel.id);
+      
+      const task2 = await models.task.query().insert({
+        name: 'Task 2',
+        statusId: testStatus.id,
+        creatorId: testUser.id,
+        executorId: testUser2.id,
+      });
+      
+      const task3 = await models.task.query().insert({
+        name: 'Task 3',
+        statusId: testStatus2.id,
+        creatorId: testUser.id,
+        executorId: testUser.id,
+      });
+      
+      const cookies = await authenticateUser();
+      const response = await app.inject({
+        method: 'GET',
+        url: `/tasks?status=${testStatus.id}&executor=${testUser.id}&createdByMe=1`,
+        cookies,
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toContain('Task 1');
+      expect(response.body).not.toContain('Task 2');
+      expect(response.body).not.toContain('Task 3');
+    });
+  });
+
   afterAll(async () => {
     await app.close();
   });

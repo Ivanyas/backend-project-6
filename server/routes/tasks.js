@@ -5,10 +5,51 @@ import i18next from 'i18next';
 export default (app) => {
   app
     .get('/tasks', { name: 'tasks' }, async (req, reply) => {
-      const tasks = await app.objection.models.task.query()
-        .withGraphFetched('[status, creator, executor]')
+      let query = app.objection.models.task.query();
+      
+      // Apply filters
+      const { status, executor, label, createdByMe } = req.query;
+      
+      // Filter by status
+      if (status) {
+        query = query.where('statusId', status);
+      }
+      
+      // Filter by executor
+      if (executor) {
+        query = query.where('executorId', executor);
+      }
+      
+      // Filter by label
+      if (label) {
+        query = query.modify((qb) => {
+          qb.innerJoin('task_labels', 'tasks.id', 'task_labels.taskId')
+            .where('task_labels.labelId', label);
+        });
+      }
+      
+      // Filter by creator (only show tasks created by current user)
+      if (createdByMe && req.user) {
+        query = query.where('creatorId', req.user.id);
+      }
+      
+      const tasks = await query
+        .withGraphFetched('[status, creator, executor, labels]')
         .orderBy('created_at', 'desc');
-      reply.render('tasks/index', { tasks, currentUser: req.user || null });
+      
+      // Get filter options
+      const statuses = await app.objection.models.taskStatus.query();
+      const users = await app.objection.models.user.query();
+      const labels = await app.objection.models.label.query();
+      
+      reply.render('tasks/index', { 
+        tasks, 
+        currentUser: req.user || null,
+        statuses,
+        users,
+        labels,
+        filters: { status, executor, label, createdByMe: createdByMe === '1' }
+      });
       return reply;
     })
     .get('/tasks/new', { name: 'newTask', preValidation: app.authenticate }, async (req, reply) => {
