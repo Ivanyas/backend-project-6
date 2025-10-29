@@ -7,6 +7,14 @@ const mode = process.env.NODE_ENV || 'development';
 const port = Number.parseInt(process.env.PORT || '3000', 10);
 const host = '0.0.0.0';
 
+// Validate required environment variables
+if (!process.env.SESSION_KEY) {
+  console.error('ERROR: SESSION_KEY environment variable is required!');
+  console.error('Please set SESSION_KEY in your Render environment variables.');
+  console.error('You can generate a secure key with: openssl rand -base64 32');
+  process.exit(1);
+}
+
 const start = async () => {
   const app = fastify({
     exposeHeadRoutes: false,
