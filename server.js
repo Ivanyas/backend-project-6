@@ -1,0 +1,43 @@
+// @ts-check
+
+import fastify from 'fastify';
+import init from './server/plugin.js';
+
+const mode = process.env.NODE_ENV || 'development';
+const port = Number.parseInt(process.env.PORT || '3000', 10);
+const host = '0.0.0.0';
+
+const start = async () => {
+  const app = fastify({
+    exposeHeadRoutes: false,
+    logger: {
+      level: mode === 'production' ? 'info' : 'debug',
+    },
+  });
+
+  // Register the plugin
+  await app.register(init);
+
+  // Run migrations in production (after plugin is registered, we have access to knex)
+  if (mode === 'production' && app.objection?.knex) {
+    try {
+      await app.objection.knex.migrate.latest();
+      app.log.info('Database migrations completed');
+    } catch (error) {
+      app.log.error('Migration error:', error);
+      // Don't throw - let the server start even if migrations fail
+      // (migrations might have already been run)
+    }
+  }
+
+  try {
+    await app.listen({ port, host });
+    app.log.info(`Server listening on ${host}:${port}`);
+  } catch (err) {
+    app.log.error(err);
+    process.exit(1);
+  }
+};
+
+start();
+
