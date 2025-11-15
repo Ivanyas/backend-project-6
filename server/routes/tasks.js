@@ -210,6 +210,7 @@ export default (app) => {
         req.flash('info', i18next.t('flash.tasks.update.success'));
         reply.redirect(app.reverse('tasks'));
       } catch (error) {
+        rollbar.error('Error updating task', error, { userId: req.user?.id, taskId: id, data });
         task.$set(data);
         
         // Convert validation errors to user-friendly messages

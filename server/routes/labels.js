@@ -1,6 +1,7 @@
 // @ts-check
 
 import i18next from 'i18next';
+import rollbar from '../lib/logger/logger.js';
 
 export default (app) => {
   app
@@ -39,6 +40,7 @@ export default (app) => {
       }
 
       if (Object.keys(errors).length > 0) {
+        rollbar.warning('Validation errors when creating label', { errors, userId: req.user?.id });
         req.flash('error', i18next.t('flash.labels.create.error'));
         reply.render('labels/new', { label, errors });
         return reply;
@@ -50,7 +52,8 @@ export default (app) => {
         req.flash('info', i18next.t('flash.labels.create.success'));
         reply.redirect(app.reverse('labels'));
       } catch (error) {
-        req.flash('error', i18next.t('flash.labels.create.error'));
+        rollbar.error('Error creating label', error, { userId: req.user?.id, data });
+        req.flash('enprror', i18next.t('flash.labels.create.error'));
         const labelForForm = new app.objection.models.label();
         labelForForm.$set(data);
         reply.render('labels/new', { label: labelForForm, errors: {} });
@@ -73,6 +76,7 @@ export default (app) => {
         req.flash('info', i18next.t('flash.labels.update.success'));
         reply.redirect(app.reverse('labels'));
       } catch (error) {
+        rollbar.error('Error updating label', error, { userId: req.user?.id, labelId: id, data: req.body.data });
         const data = { ...req.body.data };
         label.$set(data);
         

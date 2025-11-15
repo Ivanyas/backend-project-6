@@ -1,6 +1,7 @@
 // @ts-check
 
 import i18next from 'i18next';
+import rollbar from '../lib/logger/logger.js';
 
 export default (app) => {
   app
@@ -60,6 +61,7 @@ export default (app) => {
           email: req.body.data.email
         });
         
+        rollbar.warning('Validation errors when creating user', { errors, email: req.body.data.email });
         req.flash('error', i18next.t('flash.users.create.error'));
         reply.render('users/new', { user: userForForm, errors });
         return reply;
@@ -71,6 +73,8 @@ export default (app) => {
         req.flash('info', i18next.t('flash.users.create.success'));
         reply.redirect(app.reverse('root'));
       } catch (error) {
+        rollbar.error('Error creating user', error, { email: req.body.data.email });
+        
         // Don't set password in user object for security
         const userForForm = new app.objection.models.user();
         userForForm.$set({
@@ -104,6 +108,7 @@ export default (app) => {
         req.flash('info', i18next.t('flash.users.update.success'));
         reply.redirect(app.reverse('users'));
       } catch (error) {
+        rollbar.error('Error updating user', error, { userId: req.user?.id, userUpdateId: id, data: req.body.data });
         user.$set(req.body.data);
         
         // Convert validation errors to user-friendly messages

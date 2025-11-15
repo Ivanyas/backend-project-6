@@ -1,6 +1,7 @@
 // @ts-check
 
 import i18next from 'i18next';
+import rollbar from '../lib/logger/logger.js';
 
 export default (app) => {
   app
@@ -33,6 +34,7 @@ export default (app) => {
       }
 
       if (Object.keys(errors).length > 0) {
+        rollbar.warning('Validation errors when creating task status', { errors, userId: req.user?.id });
         req.flash('error', i18next.t('flash.taskStatuses.create.error'));
         reply.render('taskStatuses/new', { taskStatus, errors });
         return reply;
@@ -44,6 +46,8 @@ export default (app) => {
         req.flash('info', i18next.t('flash.taskStatuses.create.success'));
         reply.redirect(app.reverse('statuses'));
       } catch (error) {
+        rollbar.error('Error creating task status', error, { userId: req.user?.id, data: req.body.data });
+        
         const taskStatusForForm = new app.objection.models.taskStatus();
         taskStatusForForm.$set({
           name: req.body.data.name
@@ -69,6 +73,7 @@ export default (app) => {
         req.flash('info', i18next.t('flash.taskStatuses.update.success'));
         reply.redirect(app.reverse('statuses'));
       } catch (error) {
+        rollbar.error('Error updating task status', error, { userId: req.user?.id, statusId: id, data: req.body.data });
         taskStatus.$set(req.body.data);
         
         // Convert validation errors to user-friendly messages
