@@ -11,19 +11,18 @@ html(lang="en")
     nav.navbar.navbar-expand-lg.navbar-light.bg-light.mb-3
       .container-fluid
         a.navbar-brand(href=route('root'))= t('appName')
-        button.navbar-toggler(data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent")
+        button.navbar-toggler(type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation")
           span.navbar-toggler-icon
-        .collapse.navbar-collapse(id="navbarToggleExternalContent")
-          .container-fluid
-            ul.navbar-nav.mr-auto
-              li.nav-item
-                a.nav-link(href=route('users'))= t('layouts.application.users')
-              li.nav-item
-                a.nav-link(href=route('statuses'))= t('layouts.application.taskStatuses')
-              li.nav-item
-                a.nav-link(href=route('tasks'))= t('layouts.application.tasks')
-              li.nav-item
-                a.nav-link(href=route('labels'))= t('layouts.application.labels')
+        .collapse.navbar-collapse(id="navbarNav")
+          ul.navbar-nav.me-auto
+            li.nav-item
+              a.nav-link(href=route('users'))= t('layouts.application.users')
+            li.nav-item
+              a.nav-link(href=route('statuses'))= t('layouts.application.taskStatuses')
+            li.nav-item
+              a.nav-link(href=route('tasks'))= t('layouts.application.tasks')
+            li.nav-item
+              a.nav-link(href=route('labels'))= t('layouts.application.labels')
           ul.navbar-nav
             if isAuthenticated()
               li.nav-item
