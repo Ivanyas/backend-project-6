@@ -8,12 +8,20 @@ export default (app) => {
       const signInForm = {};
       reply.render('session/new', { signInForm });
     })
-    .post('/session', { name: 'session' }, app.fp.authenticate('form', async (req, reply, err, user) => {
+    .post('/session', { name: 'session' }, app.fp.authenticate('form', {
+      successRedirect: '/',
+      failureRedirect: '/session/new',
+      successFlash: i18next.t('flash.session.create.success'),
+      failureFlash: i18next.t('flash.session.create.error'),
+    }, async (req, reply, err, user) => {
+      // This callback is only called on failure when failureRedirect is not set
+      // or when we want custom failure handling
       if (err) {
         return app.httpErrors.internalServerError(err);
       }
       if (!user) {
-        const signInForm = req.body.data;
+        // Custom failure handling - render form with errors
+        const signInForm = req.body.data || {};
         const errors = {
           email: [{ message: i18next.t('flash.session.create.error') }],
         };
@@ -21,9 +29,12 @@ export default (app) => {
         reply.render('session/new', { signInForm, errors });
         return reply;
       }
+      // Success case - log in and redirect
+      // Note: successRedirect should handle this, but we do it here for safety
       await req.logIn(user);
       req.flash('success', i18next.t('flash.session.create.success'));
-      return reply.code(302).redirect(app.reverse('root'));
+      reply.code(302).redirect(app.reverse('root'));
+      return reply;
     }))
     .delete('/session', (req, reply) => {
       req.logOut();
