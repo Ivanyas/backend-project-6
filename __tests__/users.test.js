@@ -112,5 +112,8 @@ describe('test users CRUD', () => {
 
   afterAll(async () => {
     await app.close();
+    if (knex) {
+      await knex.destroy();
+    }
   });
 });

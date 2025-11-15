@@ -36,5 +36,8 @@ describe('requests', () => {
 
   afterAll(async () => {
     await app.close();
+    if (app.objection?.knex) {
+      await app.objection.knex.destroy();
+    }
   });
 });

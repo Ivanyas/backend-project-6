@@ -434,5 +434,8 @@ describe('test tasks CRUD', () => {
 
   afterAll(async () => {
     await app.close();
+    if (knex) {
+      await knex.destroy();
+    }
   });
 });

@@ -288,4 +288,11 @@ describe('test labels CRUD', () => {
     expect(response.statusCode).toBe(200);
     expect(response.body).toContain('1'); // Task count
   });
+
+  afterAll(async () => {
+    await app.close();
+    if (knex) {
+      await knex.destroy();
+    }
+  });
 });
