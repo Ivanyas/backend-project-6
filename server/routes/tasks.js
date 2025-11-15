@@ -121,7 +121,6 @@ export default (app) => {
       }
 
       if (Object.keys(errors).length > 0) {
-        console.log('Validation errors:', errors);
         req.flash('error', i18next.t('flash.tasks.create.error'));
         const statuses = await app.objection.models.taskStatus.query();
         const users = await app.objection.models.user.query();
@@ -146,8 +145,6 @@ export default (app) => {
         req.flash('info', i18next.t('flash.tasks.create.success'));
         reply.redirect(app.reverse('tasks'));
       } catch (error) {
-        console.log('Validation error:', error);
-        
         const taskForForm = new app.objection.models.task();
         taskForForm.$set({
           name: data.name,
@@ -213,7 +210,6 @@ export default (app) => {
         req.flash('info', i18next.t('flash.tasks.update.success'));
         reply.redirect(app.reverse('tasks'));
       } catch (error) {
-        console.log('Error updating task:', error);
         task.$set(data);
         
         // Convert validation errors to user-friendly messages

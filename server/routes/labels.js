@@ -39,7 +39,6 @@ export default (app) => {
       }
 
       if (Object.keys(errors).length > 0) {
-        console.log('Validation errors:', errors);
         req.flash('error', i18next.t('flash.labels.create.error'));
         reply.render('labels/new', { label, errors });
         return reply;
@@ -51,7 +50,6 @@ export default (app) => {
         req.flash('info', i18next.t('flash.labels.create.success'));
         reply.redirect(app.reverse('labels'));
       } catch (error) {
-        console.log('Validation error:', error);
         req.flash('error', i18next.t('flash.labels.create.error'));
         const labelForForm = new app.objection.models.label();
         labelForForm.$set(data);
@@ -75,7 +73,6 @@ export default (app) => {
         req.flash('info', i18next.t('flash.labels.update.success'));
         reply.redirect(app.reverse('labels'));
       } catch (error) {
-        console.log('Error updating label:', error);
         const data = { ...req.body.data };
         label.$set(data);
         

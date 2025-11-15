@@ -60,7 +60,6 @@ export default (app) => {
           email: req.body.data.email
         });
         
-        console.log('Validation errors:', errors);
         req.flash('error', i18next.t('flash.users.create.error'));
         reply.render('users/new', { user: userForForm, errors });
         return reply;
@@ -72,8 +71,6 @@ export default (app) => {
         req.flash('info', i18next.t('flash.users.create.success'));
         reply.redirect(app.reverse('root'));
       } catch (error) {
-        console.log('Validation error:', error);
-        
         // Don't set password in user object for security
         const userForForm = new app.objection.models.user();
         userForForm.$set({
@@ -107,7 +104,6 @@ export default (app) => {
         req.flash('info', i18next.t('flash.users.update.success'));
         reply.redirect(app.reverse('users'));
       } catch (error) {
-        console.log('Error updating user:', error);
         user.$set(req.body.data);
         
         // Convert validation errors to user-friendly messages

@@ -25,6 +25,7 @@ import getHelpers from './helpers/index.js';
 import * as knexConfig from '../knexfile.js';
 import models from './models/index.js';
 import FormStrategy from './lib/passportStrategies/FormStrategy.js';
+import rollbar from './lib/logger/logger.js';
 
 const __dirname = fileURLToPath(path.dirname(import.meta.url));
 
@@ -76,6 +77,25 @@ const addHooks = (app) => {
     reply.locals = {
       isAuthenticated: () => req.isAuthenticated(),
     };
+  });
+
+  app.setErrorHandler(async (error, req, reply) => {
+    rollbar.error(error, {
+      request: {
+        method: req.method,
+        url: req.url,
+        headers: req.headers,
+        params: req.params,
+        query: req.query,
+        body: req.body,
+      },
+      user: req.user ? {
+        id: req.user.id,
+        email: req.user.email,
+      } : null,
+    });
+
+    reply.send(error);
   });
 };
 

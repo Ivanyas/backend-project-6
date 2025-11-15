@@ -33,7 +33,6 @@ export default (app) => {
       }
 
       if (Object.keys(errors).length > 0) {
-        console.log('Validation errors:', errors);
         req.flash('error', i18next.t('flash.taskStatuses.create.error'));
         reply.render('taskStatuses/new', { taskStatus, errors });
         return reply;
@@ -45,8 +44,6 @@ export default (app) => {
         req.flash('info', i18next.t('flash.taskStatuses.create.success'));
         reply.redirect(app.reverse('statuses'));
       } catch (error) {
-        console.log('Validation error:', error);
-        
         const taskStatusForForm = new app.objection.models.taskStatus();
         taskStatusForForm.$set({
           name: req.body.data.name
@@ -72,7 +69,6 @@ export default (app) => {
         req.flash('info', i18next.t('flash.taskStatuses.update.success'));
         reply.redirect(app.reverse('statuses'));
       } catch (error) {
-        console.log('Error updating task status:', error);
         taskStatus.$set(req.body.data);
         
         // Convert validation errors to user-friendly messages
