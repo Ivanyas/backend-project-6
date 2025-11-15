@@ -114,6 +114,8 @@ export default {
         password: 'Пароль',
         createdAt: 'Дата создания',
         actions: 'Действия',
+        editButton: 'Изменить',
+        deleteButton: 'Удалить',
         new: {
           submit: 'Сохранить',
           signUp: 'Регистрация',

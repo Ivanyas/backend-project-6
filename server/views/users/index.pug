@@ -18,6 +18,6 @@ block content
           td= formatDate(user.createdAt)
           td
             if isAuthenticated() && user.id === currentUser.id
-              a(href=`/users/${user.id}/edit`) Edit
+              a(href=`/users/${user.id}/edit`)= t('views.users.editButton')
               |  
-              +buttonTo(`/users/${user.id}`, 'delete')(class='btn btn-link p-0 ms-2' value='Delete')
+              +buttonTo(`/users/${user.id}`, 'delete')(class='btn btn-link p-0 ms-2' value=t('views.users.deleteButton'))

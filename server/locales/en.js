@@ -104,6 +104,8 @@ export default {
         password: 'Password',
         createdAt: 'Created at',
         actions: 'Actions',
+        editButton: 'Edit',
+        deleteButton: 'Delete',
         new: {
           submit: 'Register',
           signUp: 'Register',
