@@ -63,7 +63,7 @@ const setupLocalization = async () => {
   await i18next
     .init({
       lng: 'ru',
-      fallbackLng: 'eng',
+      fallbackLng: 'en',
       // debug: isDevelopment,
       resources: {
         ru,

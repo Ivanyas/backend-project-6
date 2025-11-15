@@ -83,7 +83,7 @@ describe('test labels CRUD', () => {
     });
 
     expect(response.statusCode).toBe(200);
-    expect(response.body).toContain('New Label');
+    expect(response.body).toContain('Новая метка');
   });
 
   it('create - should redirect to login when not authenticated', async () => {
@@ -147,7 +147,7 @@ describe('test labels CRUD', () => {
     });
 
     expect(response.statusCode).toBe(200);
-    expect(response.body).toContain('Edit Label');
+    expect(response.body).toContain('Редактирование метки');
   });
 
   it('update - should redirect to login when not authenticated', async () => {
