@@ -111,6 +111,7 @@ export default {
         firstName: 'Имя',
         lastName: 'Фамилия',
         email: 'Email',
+        password: 'Пароль',
         createdAt: 'Дата создания',
         actions: 'Действия',
         new: {
