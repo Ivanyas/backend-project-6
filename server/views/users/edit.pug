@@ -6,9 +6,25 @@ block header
 block content
   +formFor()(action=`/users/${user.id}` method='post')
     input(type='hidden' name='_method' value='patch')
-    +input(user, 'firstName', errors)(type="text")
-    +input(user, 'lastName', errors)(type="text")
-    +input(user, 'email', errors)(type="text")
-    +input(user, 'password', errors)(type="password")
-    +submit(user)(value=t('views.users.edit.submit'))
+    .mb-3
+      label.form-label(for="data_firstName")= t('views.users.firstName')
+      input.form-control(id="data_firstName" name="data[firstName]" type="text" value=_.get(user, 'firstName', ''))
+      if errors && errors.firstName
+        .invalid-feedback(style="display: block;")= errors.firstName.map(({ message }) => message).join('. ')
+    .mb-3
+      label.form-label(for="data_lastName")= t('views.users.lastName')
+      input.form-control(id="data_lastName" name="data[lastName]" type="text" value=_.get(user, 'lastName', ''))
+      if errors && errors.lastName
+        .invalid-feedback(style="display: block;")= errors.lastName.map(({ message }) => message).join('. ')
+    .mb-3
+      label.form-label(for="data_email")= t('views.users.email')
+      input.form-control(id="data_email" name="data[email]" type="text" value=_.get(user, 'email', ''))
+      if errors && errors.email
+        .invalid-feedback(style="display: block;")= errors.email.map(({ message }) => message).join('. ')
+    .mb-3
+      label.form-label(for="data_password")= t('views.users.password')
+      input.form-control(id="data_password" name="data[password]" type="password")
+      if errors && errors.password
+        .invalid-feedback(style="display: block;")= errors.password.map(({ message }) => message).join('. ')
+    input.btn.btn-primary(type='submit' value=t('views.users.edit.submit'))
 
