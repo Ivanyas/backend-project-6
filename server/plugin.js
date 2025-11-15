@@ -104,8 +104,13 @@ const registerPlugins = async (app) => {
   // await app.register(fastifyErrorPage);
   await app.register(fastifyReverseRoutes);
   await app.register(fastifyFormbody, { parser: qs.parse });
+  
+  // Use a default test key if SESSION_KEY is not set (for test environments)
+  // The key must be at least 32 bytes (256 bits)
+  const sessionKey = process.env.SESSION_KEY || 'test-session-key-that-is-at-least-32-bytes-long-for-testing-purposes-only';
+  
   await app.register(fastifySecureSession, {
-    secret: process.env.SESSION_KEY,
+    secret: sessionKey,
     cookie: {
       path: '/',
     },
