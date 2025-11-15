@@ -24,7 +24,7 @@ export default {
         },
         delete: {
           error: 'Не удалось удалить пользователя',
-          success: 'Пользователь удалён',
+          success: 'Пользователь успешно удалён',
         },
       },
       taskStatuses: {
