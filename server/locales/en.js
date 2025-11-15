@@ -97,10 +97,12 @@ export default {
       },
       users: {
         id: 'ID',
+        fullName: 'Full name',
         firstName: 'First name',
         lastName: 'Last name',
         email: 'Email',
         createdAt: 'Created at',
+        actions: 'Actions',
         new: {
           submit: 'Register',
           signUp: 'Register',
