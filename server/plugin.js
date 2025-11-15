@@ -105,9 +105,19 @@ const registerPlugins = async (app) => {
   await app.register(fastifyReverseRoutes);
   await app.register(fastifyFormbody, { parser: qs.parse });
   
-  // Use a default test key if SESSION_KEY is not set (for test environments)
+  // Use a default test key if SESSION_KEY is not set or empty (for test environments)
   // The key must be at least 32 bytes (256 bits)
-  const sessionKey = process.env.SESSION_KEY || 'test-session-key-that-is-at-least-32-bytes-long-for-testing-purposes-only';
+  const defaultTestKey = 'test-session-key-that-is-at-least-32-bytes-long-for-testing-purposes-only';
+  const envKey = process.env.SESSION_KEY;
+  const sessionKey = (envKey && envKey.trim().length >= 32)
+    ? envKey
+    : defaultTestKey;
+  
+  // Ensure the key is at least 32 bytes
+  const keyBuffer = Buffer.from(sessionKey, 'utf8');
+  if (keyBuffer.length < 32) {
+    throw new Error(`SESSION_KEY must be at least 32 bytes, got ${keyBuffer.length} bytes`);
+  }
   
   await app.register(fastifySecureSession, {
     secret: sessionKey,
