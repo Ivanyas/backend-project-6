@@ -5,6 +5,14 @@ block header
 
 block content
   +formFor()(action=route('session') method='post')
-    +input(signInForm, t('views.session.new.email'), errors)(type="text")
-    +input(signInForm, t('views.session.new.password'), errors)(type="password")
+    .mb-3
+      label.form-label(for="data_email")= t('views.session.new.email')
+      input.form-control(id="data_email" name="data[email]" type="text" value=_.get(signInForm, 'email', ''))
+      if errors && errors.email
+        .invalid-feedback= errors.email.map(({ message }) => message).join('. ')
+    .mb-3
+      label.form-label(for="data_password")= t('views.session.new.password')
+      input.form-control(id="data_password" name="data[password]" type="password")
+      if errors && errors.password
+        .invalid-feedback= errors.password.map(({ message }) => message).join('. ')
     +submit(signInForm)(value=t('views.session.new.submit'))
