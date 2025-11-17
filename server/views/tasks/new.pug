@@ -5,8 +5,16 @@ block header
 
 block content
   +formFor()(action=route('tasks') method='post')
-    +input(task, 'name', errors)(type="text")
-    +input(task, 'description', errors)(type="text")
+    .mb-3
+      label.form-label(for="data_name")= t('views.tasks.name')
+      input.form-control(id="data_name" name="data[name]" type="text" value=_.get(task, 'name', ''))
+      if errors && errors.name
+        .invalid-feedback(style="display: block;")= errors.name.map(({ message }) => message).join('. ')
+    .mb-3
+      label.form-label(for="data_description")= t('views.tasks.description')
+      textarea.form-control(id="data_description" name="data[description]" rows="4")= _.get(task, 'description', '')
+      if errors && errors.description
+        .invalid-feedback(style="display: block;")= errors.description.map(({ message }) => message).join('. ')
     
     .mb-3(class=(errors && errors.statusId && 'has-danger'))
       label.form-label(for="data_statusId")= t('views.tasks.status')
