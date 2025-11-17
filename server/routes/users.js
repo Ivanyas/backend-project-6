@@ -150,7 +150,9 @@ export default (app) => {
       
       try {
         await app.objection.models.user.query().deleteById(id);
-        req.flash('info', i18next.t('flash.users.delete.success'));
+        req.flash('success', i18next.t('flash.users.delete.success'));
+        // Log out the user after deletion
+        await req.logOut();
       } catch (e) {
         req.flash('error', i18next.t('flash.users.delete.error'));
       }
