@@ -6,11 +6,15 @@ block header
 block content
   +formFor()(action=`/labels/${label.id}` method='post')
     input(type='hidden' name='_method' value='patch')
-    +input(label, 'name', errors)(type="text")
+    .mb-3
+      label.form-label(for="data_name")= t('views.labels.name')
+      input.form-control(id="data_name" name="data[name]" type="text" value=_.get(label, 'name', ''))
+      if errors && errors.name
+        .invalid-feedback(style="display: block;")= errors.name.map(({ message }) => message).join('. ')
     
     if label.tasks && label.tasks.length > 0
       .alert.alert-info
         = t('views.labels.tasksLinked', { count: label.tasks.length })
     
-    +submit(label)(value=t('views.labels.submit'))
+    input.btn.btn-primary(type='submit' value=t('views.labels.submit'))
 
