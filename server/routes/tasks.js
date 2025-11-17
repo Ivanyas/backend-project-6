@@ -93,9 +93,13 @@ export default (app) => {
       return reply;
     })
     .post('/tasks', { preValidation: app.authenticate }, async (req, reply) => {
-      app.log.info('POST /tasks - Request body:', req.body);
       const task = new app.objection.models.task();
       const data = { ...req.body.data };
+      
+      // Extract labelIds separately - it's not a task column
+      const labelIds = data.labelIds;
+      delete data.labelIds;
+      
       if (!data.description || data.description.trim() === '') {
         data.description = null;
       }
@@ -114,7 +118,6 @@ export default (app) => {
       }
       task.$set(data);
       task.creatorId = req.user.id;
-      app.log.info('Task object before save:', { name: task.name, statusId: task.statusId, creatorId: task.creatorId });
       
       // Manual validation
       const errors = {};
@@ -139,8 +142,7 @@ export default (app) => {
         const savedTask = await app.objection.models.task.query().insert(task);
         
         // Handle labels
-        const labelIds = data.labelIds || [];
-        if (Array.isArray(labelIds) && labelIds.length > 0) {
+        if (labelIds && Array.isArray(labelIds) && labelIds.length > 0) {
           const labelIdsArray = labelIds.map(id => parseInt(id, 10)).filter(id => !isNaN(id));
           if (labelIdsArray.length > 0) {
             await savedTask.$relatedQuery('labels').relate(labelIdsArray);
@@ -151,9 +153,6 @@ export default (app) => {
         reply.redirect(app.reverse('tasks'));
         return reply;
       } catch (error) {
-        app.log.error('Task creation error:', error);
-        app.log.error('Task data:', { name: data.name, statusId: data.statusId, creatorId: req.user?.id, labelIds: data.labelIds });
-        app.log.error('Error details:', { message: error.message, data: error.data, type: error.type });
         const taskForForm = new app.objection.models.task();
         taskForForm.$set({
           name: data.name,
@@ -162,9 +161,7 @@ export default (app) => {
           executorId: data.executorId,
         });
         
-        // Temporary debug message
-        const debugMsg = `${i18next.t('flash.tasks.create.error')} [DEBUG: ${error.message}]`;
-        req.flash('error', debugMsg);
+        req.flash('error', i18next.t('flash.tasks.create.error'));
         const statuses = await app.objection.models.taskStatus.query();
         const users = await app.objection.models.user.query();
         const labels = await app.objection.models.label.query();
@@ -188,6 +185,11 @@ export default (app) => {
       }
 
       const data = { ...req.body.data };
+      
+      // Extract labelIds separately - it's not a task column
+      const labelIds = data.labelIds;
+      delete data.labelIds;
+      
       try {
         // Handle optional description field
         if ('description' in data && (!data.description || data.description.trim() === '')) {
@@ -213,8 +215,7 @@ export default (app) => {
         await task.$query().patch(task);
         
         // Handle labels
-        const labelIds = data.labelIds || [];
-        if (Array.isArray(labelIds)) {
+        if (labelIds && Array.isArray(labelIds)) {
           // Remove all existing label relationships
           await task.$relatedQuery('labels').unrelate();
           
