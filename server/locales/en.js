@@ -125,6 +125,7 @@ export default {
         edit: 'Edit Task Status',
         delete: 'Delete',
         submit: 'Save',
+        editSubmit: 'Edit',
         editButton: 'Edit',
         deleteButton: 'Delete',
       },

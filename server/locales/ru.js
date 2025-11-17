@@ -135,6 +135,7 @@ export default {
         edit: 'Изменение статуса',
         delete: 'Удалить',
         submit: 'Создать',
+        editSubmit: 'Изменить',
         editButton: 'Изменить',
         deleteButton: 'Удалить',
       },

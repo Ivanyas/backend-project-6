@@ -11,4 +11,4 @@ block content
       input.form-control(id="data_name" name="data[name]" type="text" value=_.get(taskStatus, 'name', ''))
       if errors && errors.name
         .invalid-feedback(style="display: block;")= errors.name.map(({ message }) => message).join('. ')
-    input.btn.btn-primary(type='submit' value=t('views.taskStatuses.submit'))
+    input.btn.btn-primary(type='submit' value=t('views.taskStatuses.editSubmit'))
