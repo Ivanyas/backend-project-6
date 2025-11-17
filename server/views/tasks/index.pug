@@ -32,10 +32,9 @@ block content
       
       .col-md-3
         if isAuthenticated()
-          label.form-label= t('views.tasks.createdByMe')
-          select.form-select(name='createdByMe')
-            option(value='')= t('views.tasks.allTasks')
-            option(value='1' selected=(filters.createdByMe))= t('views.tasks.myTasks')
+          .form-check.mt-4
+            input.form-check-input(type='checkbox' name='createdByMe' value='1' id='createdByMe' checked=(filters.createdByMe))
+            label.form-check-label(for='createdByMe')= t('views.tasks.createdByMe')
       
       .col-md-12
         button.btn.btn-primary.me-2(type='submit')= t('views.tasks.filter')
