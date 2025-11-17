@@ -142,7 +142,7 @@ export default (app) => {
           }
         }
         
-        req.flash('info', i18next.t('flash.tasks.create.success'));
+        req.flash('success', i18next.t('flash.tasks.create.success'));
         reply.redirect(app.reverse('tasks'));
       } catch (error) {
         const taskForForm = new app.objection.models.task();
@@ -207,7 +207,7 @@ export default (app) => {
           }
         }
         
-        req.flash('info', i18next.t('flash.tasks.update.success'));
+        req.flash('success', i18next.t('flash.tasks.update.success'));
         reply.redirect(app.reverse('tasks'));
       } catch (error) {
         rollbar.error('Error updating task', error, { userId: req.user?.id, taskId: id, data });
@@ -256,7 +256,7 @@ export default (app) => {
       
       try {
         await app.objection.models.task.query().deleteById(id);
-        req.flash('info', i18next.t('flash.tasks.delete.success'));
+        req.flash('success', i18next.t('flash.tasks.delete.success'));
       } catch (e) {
         req.flash('error', i18next.t('flash.tasks.delete.error'));
       }
