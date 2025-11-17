@@ -10,22 +10,22 @@ block content
   form.mb-4(action=route('tasks') method='get')
     .row.g-3
       .col-md-3
-        label.form-label= t('views.tasks.status')
-        select.form-select(name='status')
+        label.form-label(for='data_status')= t('views.tasks.status')
+        select.form-select(id='data_status' name='status')
           option(value='')= t('views.tasks.allStatuses')
           each status in statuses
             option(value=status.id selected=(filters.status == status.id))= status.name
       
       .col-md-3
-        label.form-label= t('views.tasks.executor')
-        select.form-select(name='executor')
+        label.form-label(for='data_executor')= t('views.tasks.executor')
+        select.form-select(id='data_executor' name='executor')
           option(value='')= t('views.tasks.allExecutors')
           each user in users
             option(value=user.id selected=(filters.executor == user.id))= user.firstName + ' ' + user.lastName
       
       .col-md-3
-        label.form-label= t('views.tasks.labels')
-        select.form-select(name='label')
+        label.form-label(for='data_label')= t('views.tasks.labels')
+        select.form-select(id='data_label' name='label')
           option(value='')= t('views.tasks.allLabels')
           each label in labels
             option(value=label.id selected=(filters.label == label.id))= label.name
