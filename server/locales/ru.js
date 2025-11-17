@@ -135,6 +135,8 @@ export default {
         edit: 'Изменение статуса',
         delete: 'Удалить',
         submit: 'Создать',
+        editButton: 'Изменить',
+        deleteButton: 'Удалить',
       },
       tasks: {
         title: 'Задачи',

@@ -20,5 +20,5 @@ block content
           td= formatDate(taskStatus.createdAt)
           td
             if isAuthenticated()
-              a.btn.btn-sm.btn-outline-primary.me-2(href=`/statuses/${taskStatus.id}/edit`)= t('views.taskStatuses.edit')
-              +buttonTo(`/statuses/${taskStatus.id}`, 'delete')(class='btn btn-sm btn-outline-danger' value=t('views.taskStatuses.delete'))
+              a.btn.btn-sm.btn-outline-primary.me-2(href=`/statuses/${taskStatus.id}/edit`)= t('views.taskStatuses.editButton')
+              +buttonTo(`/statuses/${taskStatus.id}`, 'delete')(class='btn btn-sm btn-outline-danger' value=t('views.taskStatuses.deleteButton'))
