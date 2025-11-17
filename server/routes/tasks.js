@@ -141,11 +141,11 @@ export default (app) => {
         await task.$validate();
         const savedTask = await app.objection.models.task.query().insert(task);
         
-        // Handle labels
+        // Handle labels - insert one at a time for SQLite compatibility
         if (labelIds && Array.isArray(labelIds) && labelIds.length > 0) {
           const labelIdsArray = labelIds.map(id => parseInt(id, 10)).filter(id => !isNaN(id));
-          if (labelIdsArray.length > 0) {
-            await savedTask.$relatedQuery('labels').relate(labelIdsArray);
+          for (const labelId of labelIdsArray) {
+            await savedTask.$relatedQuery('labels').relate(labelId);
           }
         }
         
@@ -153,7 +153,6 @@ export default (app) => {
         reply.redirect(app.reverse('tasks'));
         return reply;
       } catch (error) {
-        app.log.error('Task creation error:', error);
         const taskForForm = new app.objection.models.task();
         taskForForm.$set({
           name: data.name,
@@ -162,9 +161,7 @@ export default (app) => {
           executorId: data.executorId,
         });
         
-        // Temporary debug message
-        const debugMsg = `${i18next.t('flash.tasks.create.error')} [DEBUG: ${error.message}]`;
-        req.flash('error', debugMsg);
+        req.flash('error', i18next.t('flash.tasks.create.error'));
         const statuses = await app.objection.models.taskStatus.query();
         const users = await app.objection.models.user.query();
         const labels = await app.objection.models.label.query();
@@ -217,15 +214,15 @@ export default (app) => {
         await task.$validate();
         await task.$query().patch(task);
         
-        // Handle labels
+        // Handle labels - insert one at a time for SQLite compatibility
         if (labelIds && Array.isArray(labelIds)) {
           // Remove all existing label relationships
           await task.$relatedQuery('labels').unrelate();
           
-          // Add new label relationships
+          // Add new label relationships one at a time
           const labelIdsArray = labelIds.map(id => parseInt(id, 10)).filter(id => !isNaN(id));
-          if (labelIdsArray.length > 0) {
-            await task.$relatedQuery('labels').relate(labelIdsArray);
+          for (const labelId of labelIdsArray) {
+            await task.$relatedQuery('labels').relate(labelId);
           }
         }
         
