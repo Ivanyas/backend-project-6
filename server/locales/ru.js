@@ -153,6 +153,7 @@ export default {
         new: 'Создать задачу',
         edit: 'Изменение задачи',
         editButton: 'Изменить',
+        editSubmit: 'Изменить',
         delete: 'Удалить',
         submit: 'Создать',
         selectStatus: 'Выберите статус',

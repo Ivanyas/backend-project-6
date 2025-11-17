@@ -143,6 +143,7 @@ export default {
         new: 'New Task',
         edit: 'Edit Task',
         editButton: 'Edit',
+        editSubmit: 'Edit',
         delete: 'Delete',
         submit: 'Save',
         selectStatus: 'Select Status',
