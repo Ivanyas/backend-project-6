@@ -102,6 +102,9 @@ export default (app) => {
       if (!data.executorId || data.executorId === '') {
         data.executorId = null;
       }
+      if (!data.statusId || data.statusId === '') {
+        data.statusId = null;
+      }
       // Convert string IDs to integers
       if (data.statusId) {
         data.statusId = parseInt(data.statusId, 10);
@@ -186,11 +189,17 @@ export default (app) => {
 
       const data = { ...req.body.data };
       try {
-        if (!data.description || data.description.trim() === '') {
+        // Handle optional description field
+        if ('description' in data && (!data.description || data.description.trim() === '')) {
           data.description = null;
         }
-        if (!data.executorId || data.executorId === '') {
+        // Handle optional executorId field
+        if ('executorId' in data && (!data.executorId || data.executorId === '')) {
           data.executorId = null;
+        }
+        // Handle statusId field - only set to null if explicitly provided as empty
+        if ('statusId' in data && (!data.statusId || data.statusId === '')) {
+          data.statusId = null;
         }
         // Convert string IDs to integers
         if (data.statusId) {
