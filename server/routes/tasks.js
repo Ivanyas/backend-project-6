@@ -134,7 +134,7 @@ export default (app) => {
         const savedTask = await app.objection.models.task.query().insert(task);
         
         // Handle labels
-        const labelIds = req.body.labelIds || [];
+        const labelIds = data.labelIds || [];
         if (Array.isArray(labelIds) && labelIds.length > 0) {
           const labelIdsArray = labelIds.map(id => parseInt(id, 10)).filter(id => !isNaN(id));
           if (labelIdsArray.length > 0) {
@@ -175,8 +175,8 @@ export default (app) => {
         return reply.redirect(app.reverse('tasks'));
       }
 
+      const data = { ...req.body.data };
       try {
-        const data = { ...req.body.data };
         if (!data.description || data.description.trim() === '') {
           data.description = null;
         }
@@ -195,7 +195,7 @@ export default (app) => {
         await task.$query().patch(task);
         
         // Handle labels
-        const labelIds = req.body.labelIds || [];
+        const labelIds = data.labelIds || [];
         if (Array.isArray(labelIds)) {
           // Remove all existing label relationships
           await task.$relatedQuery('labels').unrelate();
@@ -210,7 +210,7 @@ export default (app) => {
         req.flash('success', i18next.t('flash.tasks.update.success'));
         reply.redirect(app.reverse('tasks'));
       } catch (error) {
-        rollbar.error('Error updating task', error, { userId: req.user?.id, taskId: id, data });
+        rollbar.error('Error updating task', error, { userId: req.user?.id, taskId: id, data: req.body.data });
         task.$set(data);
         
         // Convert validation errors to user-friendly messages
