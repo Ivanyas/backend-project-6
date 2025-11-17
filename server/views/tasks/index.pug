@@ -69,5 +69,5 @@ block content
           td= formatDate(task.createdAt)
           td
             if isAuthenticated() && task.creatorId === currentUser.id
-                  a.btn.btn-sm.btn-outline-primary.me-2(href=`/tasks/${task.id}/edit`)= t('views.tasks.edit')
+                  a.btn.btn-sm.btn-outline-primary.me-2(href=`/tasks/${task.id}/edit`)= t('views.tasks.editButton')
                   +buttonTo(`/tasks/${task.id}`, 'delete')(class='btn btn-sm btn-outline-danger' value=t('views.tasks.delete'))
