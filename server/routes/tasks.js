@@ -145,6 +145,8 @@ export default (app) => {
         req.flash('success', i18next.t('flash.tasks.create.success'));
         reply.redirect(app.reverse('tasks'));
       } catch (error) {
+        console.error('Task creation error:', error);
+        console.error('Task data:', { name: data.name, statusId: data.statusId, creatorId: req.user?.id });
         const taskForForm = new app.objection.models.task();
         taskForForm.$set({
           name: data.name,
@@ -210,7 +212,6 @@ export default (app) => {
         req.flash('success', i18next.t('flash.tasks.update.success'));
         reply.redirect(app.reverse('tasks'));
       } catch (error) {
-        rollbar.error('Error updating task', error, { userId: req.user?.id, taskId: id, data: req.body.data });
         task.$set(data);
         
         // Convert validation errors to user-friendly messages
