@@ -6,5 +6,9 @@ block header
 block content
   +formFor()(action=`/statuses/${taskStatus.id}` method='post')
     input(type='hidden' name='_method' value='patch')
-    +input(taskStatus, 'name', errors)(type="text")
-    +submit(taskStatus)(value=t('views.taskStatuses.submit'))
+    .mb-3
+      label.form-label(for="data_name")= t('views.taskStatuses.name')
+      input.form-control(id="data_name" name="data[name]" type="text" value=_.get(taskStatus, 'name', ''))
+      if errors && errors.name
+        .invalid-feedback(style="display: block;")= errors.name.map(({ message }) => message).join('. ')
+    input.btn.btn-primary(type='submit' value=t('views.taskStatuses.submit'))
