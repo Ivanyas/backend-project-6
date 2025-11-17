@@ -8,7 +8,7 @@ describe('test labels CRUD', () => {
   let knex;
   let models;
   let testUser;
-  
+
   beforeAll(async () => {
     app = fastify({
       exposeHeadRoutes: false,
@@ -20,7 +20,7 @@ describe('test labels CRUD', () => {
 
     await knex.migrate.latest();
     await prepareData(app);
-    
+
     // Create test user
     testUser = await models.user.query().insert({
       firstName: 'Test',
@@ -46,7 +46,7 @@ describe('test labels CRUD', () => {
         },
       },
     });
-    
+
     if (response.cookies && response.cookies.length > 0) {
       const [sessionCookie] = response.cookies;
       const { name, value } = sessionCookie;
@@ -115,7 +115,7 @@ describe('test labels CRUD', () => {
     });
 
     expect(response.statusCode).toBe(302);
-    
+
     const labels = await models.label.query();
     expect(labels.length).toBeGreaterThan(0);
   });
@@ -187,7 +187,7 @@ describe('test labels CRUD', () => {
     });
 
     expect(response.statusCode).toBe(302);
-    
+
     const updatedLabel = await models.label.query().findById(testLabel.id);
     expect(updatedLabel.name).toBe('Updated Label');
   });
@@ -219,9 +219,9 @@ describe('test labels CRUD', () => {
     });
 
     expect(response.statusCode).toBe(302);
-    
+
     const labels = await models.label.query();
-    const deletedLabel = labels.find(l => l.id === testLabel.id);
+    const deletedLabel = labels.find((l) => l.id === testLabel.id);
     expect(deletedLabel).toBeUndefined();
   });
 
@@ -252,10 +252,10 @@ describe('test labels CRUD', () => {
     });
 
     expect(response.statusCode).toBe(302);
-    
+
     // Label should still exist
     const labels = await models.label.query();
-    const labelExists = labels.find(l => l.id === testLabel.id);
+    const labelExists = labels.find((l) => l.id === testLabel.id);
     expect(labelExists).toBeDefined();
   });
 

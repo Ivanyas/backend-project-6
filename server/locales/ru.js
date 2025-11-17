@@ -85,17 +85,17 @@ export default {
         statusId: 'Статус обязателен для выбора',
       },
     },
-      layouts: {
-        application: {
-          users: 'Пользователи',
-          taskStatuses: 'Статусы',
-          tasks: 'Задачи',
-          labels: 'Метки',
-          signIn: 'Вход',
-          signUp: 'Регистрация',
-          signOut: 'Выход',
-        },
+    layouts: {
+      application: {
+        users: 'Пользователи',
+        taskStatuses: 'Статусы',
+        tasks: 'Задачи',
+        labels: 'Метки',
+        signIn: 'Вход',
+        signUp: 'Регистрация',
+        signOut: 'Выход',
       },
+    },
     views: {
       session: {
         new: {

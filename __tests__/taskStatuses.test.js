@@ -3,7 +3,7 @@
 import fastify from 'fastify';
 
 import init from '../server/plugin.js';
-import { getTestData, prepareData } from './helpers/index.js';
+import { prepareData } from './helpers/index.js';
 import encrypt from '../server/lib/secure.cjs';
 
 describe('test task statuses CRUD', () => {
@@ -11,7 +11,6 @@ describe('test task statuses CRUD', () => {
   let knex;
   let models;
   let testUser;
-  const testData = getTestData();
 
   beforeAll(async () => {
     app = fastify({
@@ -24,7 +23,7 @@ describe('test task statuses CRUD', () => {
 
     await knex.migrate.latest();
     await prepareData(app);
-    
+
     // Create test user
     testUser = await models.user.query().insert({
       firstName: 'Test',
@@ -50,7 +49,7 @@ describe('test task statuses CRUD', () => {
         },
       },
     });
-    
+
     if (response.cookies && response.cookies.length > 0) {
       const [sessionCookie] = response.cookies;
       const { name, value } = sessionCookie;
@@ -198,7 +197,6 @@ describe('test task statuses CRUD', () => {
     const deletedTaskStatus = await models.taskStatus.query().findById(taskStatus.id);
     expect(deletedTaskStatus).toBeUndefined();
   });
-
 
   afterAll(async () => {
     await app.close();

@@ -26,7 +26,7 @@ export default (app) => {
     .post('/statuses', { preValidation: app.authenticate }, async (req, reply) => {
       const taskStatus = new app.objection.models.taskStatus();
       taskStatus.$set(req.body.data);
-      
+
       // Manual validation
       const errors = {};
       if (!req.body.data.name || req.body.data.name.trim().length === 0) {
@@ -47,12 +47,12 @@ export default (app) => {
         reply.redirect(app.reverse('statuses'));
       } catch (error) {
         rollbar.error('Error creating task status', error, { userId: req.user?.id, data: req.body.data });
-        
+
         const taskStatusForForm = new app.objection.models.taskStatus();
         taskStatusForForm.$set({
-          name: req.body.data.name
+          name: req.body.data.name,
         });
-        
+
         req.flash('error', i18next.t('flash.taskStatuses.create.error'));
         reply.render('taskStatuses/new', { taskStatus: taskStatusForForm, errors: {} });
       }
@@ -75,14 +75,14 @@ export default (app) => {
       } catch (error) {
         rollbar.error('Error updating task status', error, { userId: req.user?.id, statusId: id, data: req.body.data });
         taskStatus.$set(req.body.data);
-        
+
         // Convert validation errors to user-friendly messages
         const errors = {};
         if (error.data) {
-          Object.keys(error.data).forEach(key => {
+          Object.keys(error.data).forEach((key) => {
             const fieldErrors = error.data[key];
             if (fieldErrors && fieldErrors.length > 0) {
-              errors[key] = fieldErrors.map(err => {
+              errors[key] = fieldErrors.map((err) => {
                 switch (err.keyword) {
                   case 'required':
                     return { message: i18next.t(`flash.validation.${key}`) };
@@ -95,7 +95,7 @@ export default (app) => {
             }
           });
         }
-        
+
         req.flash('error', i18next.t('flash.taskStatuses.update.error'));
         reply.render('taskStatuses/edit', { taskStatus, errors });
       }
@@ -107,7 +107,7 @@ export default (app) => {
       if (!taskStatus) {
         return reply.notFound();
       }
-      
+
       try {
         await app.objection.models.taskStatus.query().deleteById(id);
         req.flash('info', i18next.t('flash.taskStatuses.delete.success'));

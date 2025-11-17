@@ -3,7 +3,7 @@
 import fastify from 'fastify';
 
 import init from '../server/plugin.js';
-import { getTestData, prepareData } from './helpers/index.js';
+import { prepareData } from './helpers/index.js';
 import encrypt from '../server/lib/secure.cjs';
 
 describe('test tasks CRUD', () => {
@@ -12,7 +12,6 @@ describe('test tasks CRUD', () => {
   let models;
   let testUser;
   let testStatus;
-  const testData = getTestData();
 
   beforeAll(async () => {
     app = fastify({
@@ -25,7 +24,7 @@ describe('test tasks CRUD', () => {
 
     await knex.migrate.latest();
     await prepareData(app);
-    
+
     // Create test user
     testUser = await models.user.query().insert({
       firstName: 'Test',
@@ -33,7 +32,7 @@ describe('test tasks CRUD', () => {
       email: 'test@example.com',
       passwordDigest: encrypt('password123'),
     });
-    
+
     // Create test status
     testStatus = await models.taskStatus.query().insert({
       name: 'новый',
@@ -56,7 +55,7 @@ describe('test tasks CRUD', () => {
         },
       },
     });
-    
+
     if (response.cookies && response.cookies.length > 0) {
       const [sessionCookie] = response.cookies;
       const { name, value } = sessionCookie;
@@ -96,7 +95,7 @@ describe('test tasks CRUD', () => {
   });
 
   it('create - should redirect to login when not authenticated', async () => {
-    const params = { 
+    const params = {
       name: 'Test Task',
       description: 'Test Description',
       statusId: testStatus.id,
@@ -115,7 +114,7 @@ describe('test tasks CRUD', () => {
 
   it('create - should create task when authenticated', async () => {
     const cookies = await authenticateUser();
-    const params = { 
+    const params = {
       name: 'Test Task',
       description: 'Test Description',
       statusId: testStatus.id,
@@ -146,7 +145,7 @@ describe('test tasks CRUD', () => {
       statusId: testStatus.id,
       creatorId: testUser.id,
     });
-    
+
     const response = await app.inject({
       method: 'GET',
       url: app.reverse('task', { id: task.id }),
@@ -161,7 +160,7 @@ describe('test tasks CRUD', () => {
       statusId: testStatus.id,
       creatorId: testUser.id,
     });
-    
+
     const response = await app.inject({
       method: 'GET',
       url: app.reverse('editTask', { id: task.id }),
@@ -177,7 +176,7 @@ describe('test tasks CRUD', () => {
       statusId: testStatus.id,
       creatorId: testUser.id,
     });
-    
+
     const response = await app.inject({
       method: 'GET',
       url: app.reverse('editTask', { id: task.id }),
@@ -192,7 +191,7 @@ describe('test tasks CRUD', () => {
       statusId: testStatus.id,
       creatorId: testUser.id,
     });
-    
+
     const params = { name: 'Updated Task' };
     const response = await app.inject({
       method: 'PATCH',
@@ -213,7 +212,7 @@ describe('test tasks CRUD', () => {
       statusId: testStatus.id,
       creatorId: testUser.id,
     });
-    
+
     const params = { name: 'Updated Task' };
     const response = await app.inject({
       method: 'PATCH',
@@ -235,7 +234,7 @@ describe('test tasks CRUD', () => {
       statusId: testStatus.id,
       creatorId: testUser.id,
     });
-    
+
     const response = await app.inject({
       method: 'DELETE',
       url: `/tasks/${task.id}`,
@@ -252,7 +251,7 @@ describe('test tasks CRUD', () => {
       statusId: testStatus.id,
       creatorId: testUser.id,
     });
-    
+
     const response = await app.inject({
       method: 'DELETE',
       url: `/tasks/${task.id}`,
@@ -272,12 +271,12 @@ describe('test tasks CRUD', () => {
     beforeEach(async () => {
       // Clean up test data
       await models.task.query().delete();
-      
+
       // Create additional test data
       testStatus2 = await models.taskStatus.query().insert({
         name: 'в работе',
       });
-      
+
       // Check if testUser2 already exists, if not create it
       testUser2 = await models.user.query().findOne({ email: 'john@example.com' });
       if (!testUser2) {
@@ -288,25 +287,25 @@ describe('test tasks CRUD', () => {
           passwordDigest: encrypt('password123'),
         });
       }
-      
+
       testLabel = await models.label.query().insert({
         name: 'bug',
       });
     });
 
     it('filter by status', async () => {
-      const task1 = await models.task.query().insert({
+      await models.task.query().insert({
         name: 'Task 1',
         statusId: testStatus.id,
         creatorId: testUser.id,
       });
-      
-      const task2 = await models.task.query().insert({
+
+      await models.task.query().insert({
         name: 'Task 2',
         statusId: testStatus2.id,
         creatorId: testUser.id,
       });
-      
+
       const response = await app.inject({
         method: 'GET',
         url: `/tasks?status=${testStatus.id}`,
@@ -318,20 +317,20 @@ describe('test tasks CRUD', () => {
     });
 
     it('filter by executor', async () => {
-      const task1 = await models.task.query().insert({
+      await models.task.query().insert({
         name: 'Task 1',
         statusId: testStatus.id,
         creatorId: testUser.id,
         executorId: testUser.id,
       });
-      
-      const task2 = await models.task.query().insert({
+
+      await models.task.query().insert({
         name: 'Task 2',
         statusId: testStatus.id,
         creatorId: testUser.id,
         executorId: testUser2.id,
       });
-      
+
       const response = await app.inject({
         method: 'GET',
         url: `/tasks?executor=${testUser.id}`,
@@ -348,16 +347,16 @@ describe('test tasks CRUD', () => {
         statusId: testStatus.id,
         creatorId: testUser.id,
       });
-      
-      const task2 = await models.task.query().insert({
+
+      await models.task.query().insert({
         name: 'Task 2',
         statusId: testStatus.id,
         creatorId: testUser.id,
       });
-      
+
       // Link label to task1
       await task1.$relatedQuery('labels').relate(testLabel.id);
-      
+
       const response = await app.inject({
         method: 'GET',
         url: `/tasks?label=${testLabel.id}`,
@@ -369,18 +368,18 @@ describe('test tasks CRUD', () => {
     });
 
     it('filter by createdByMe', async () => {
-      const task1 = await models.task.query().insert({
+      await models.task.query().insert({
         name: 'Task 1',
         statusId: testStatus.id,
         creatorId: testUser.id,
       });
-      
-      const task2 = await models.task.query().insert({
+
+      await models.task.query().insert({
         name: 'Task 2',
         statusId: testStatus.id,
         creatorId: testUser2.id,
       });
-      
+
       const cookies = await authenticateUser();
       const response = await app.inject({
         method: 'GET',
@@ -400,24 +399,24 @@ describe('test tasks CRUD', () => {
         creatorId: testUser.id,
         executorId: testUser.id,
       });
-      
+
       // Link label to task1
       await task1.$relatedQuery('labels').relate(testLabel.id);
-      
-      const task2 = await models.task.query().insert({
+
+      await models.task.query().insert({
         name: 'Task 2',
         statusId: testStatus.id,
         creatorId: testUser.id,
         executorId: testUser2.id,
       });
-      
-      const task3 = await models.task.query().insert({
+
+      await models.task.query().insert({
         name: 'Task 3',
         statusId: testStatus2.id,
         creatorId: testUser.id,
         executorId: testUser.id,
       });
-      
+
       const cookies = await authenticateUser();
       const response = await app.inject({
         method: 'GET',

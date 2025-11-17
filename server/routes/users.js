@@ -31,7 +31,7 @@ export default (app) => {
     .post('/users', async (req, reply) => {
       const user = new app.objection.models.user();
       user.$set(req.body.data);
-      
+
       // Set password explicitly
       if (req.body.data.password) {
         user.password = req.body.data.password;
@@ -58,9 +58,9 @@ export default (app) => {
         userForForm.$set({
           firstName: req.body.data.firstName,
           lastName: req.body.data.lastName,
-          email: req.body.data.email
+          email: req.body.data.email,
         });
-        
+
         rollbar.warning('Validation errors when creating user', { errors, email: req.body.data.email });
         req.flash('error', i18next.t('flash.users.create.error'));
         reply.render('users/new', { user: userForForm, errors });
@@ -74,15 +74,15 @@ export default (app) => {
         reply.redirect(app.reverse('root'));
       } catch (error) {
         rollbar.error('Error creating user', error, { email: req.body.data.email });
-        
+
         // Don't set password in user object for security
         const userForForm = new app.objection.models.user();
         userForForm.$set({
           firstName: req.body.data.firstName,
           lastName: req.body.data.lastName,
-          email: req.body.data.email
+          email: req.body.data.email,
         });
-        
+
         req.flash('error', i18next.t('flash.users.create.error'));
         reply.render('users/new', { user: userForForm, errors: {} });
       }
@@ -110,14 +110,14 @@ export default (app) => {
       } catch (error) {
         rollbar.error('Error updating user', error, { userId: req.user?.id, userUpdateId: id, data: req.body.data });
         user.$set(req.body.data);
-        
+
         // Convert validation errors to user-friendly messages
         const errors = {};
         if (error.data) {
-          Object.keys(error.data).forEach(key => {
+          Object.keys(error.data).forEach((key) => {
             const fieldErrors = error.data[key];
             if (fieldErrors && fieldErrors.length > 0) {
-              errors[key] = fieldErrors.map(err => {
+              errors[key] = fieldErrors.map((err) => {
                 switch (err.keyword) {
                   case 'required':
                     return { message: i18next.t(`flash.validation.${key}`) };
@@ -130,7 +130,7 @@ export default (app) => {
             }
           });
         }
-        
+
         req.flash('error', i18next.t('flash.users.update.error'));
         reply.render('users/edit', { user, errors });
       }
@@ -147,7 +147,7 @@ export default (app) => {
         req.flash('error', i18next.t('flash.authError'));
         return reply.redirect(app.reverse('users'));
       }
-      
+
       try {
         await app.objection.models.user.query().deleteById(id);
         req.flash('success', i18next.t('flash.users.delete.success'));

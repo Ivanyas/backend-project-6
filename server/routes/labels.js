@@ -32,7 +32,7 @@ export default (app) => {
       const label = new app.objection.models.label();
       const data = { ...req.body.data };
       label.$set(data);
-      
+
       // Manual validation
       const errors = {};
       if (!data.name || data.name.trim().length === 0) {
@@ -79,13 +79,13 @@ export default (app) => {
         rollbar.error('Error updating label', error, { userId: req.user?.id, labelId: id, data: req.body.data });
         const data = { ...req.body.data };
         label.$set(data);
-        
+
         const errors = {};
         if (error.data) {
-          Object.keys(error.data).forEach(key => {
+          Object.keys(error.data).forEach((key) => {
             const fieldErrors = error.data[key];
             if (fieldErrors && fieldErrors.length > 0) {
-              errors[key] = fieldErrors.map(err => {
+              errors[key] = fieldErrors.map((err) => {
                 if (err.keyword === 'minLength') {
                   return { message: i18next.t(`flash.validation.${key}Length`) };
                 }
@@ -108,14 +108,14 @@ export default (app) => {
       if (!label) {
         return reply.notFound();
       }
-      
+
       // Check if label is linked to any task
       if (label.tasks && label.tasks.length > 0) {
         req.flash('error', i18next.t('flash.labels.delete.linkedError'));
         reply.redirect(app.reverse('labels'));
         return reply;
       }
-      
+
       try {
         await app.objection.models.label.query().deleteById(id);
         req.flash('info', i18next.t('flash.labels.delete.success'));
@@ -126,4 +126,3 @@ export default (app) => {
       return reply;
     });
 };
-

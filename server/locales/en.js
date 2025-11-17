@@ -77,17 +77,17 @@ export default {
         statusId: 'Status is required',
       },
     },
-      layouts: {
-        application: {
-          users: 'Users',
-          taskStatuses: 'Task Statuses',
-          tasks: 'Tasks',
-          labels: 'Labels',
-          signIn: 'Login',
-          signUp: 'Register',
-          signOut: 'Logout',
-        },
+    layouts: {
+      application: {
+        users: 'Users',
+        taskStatuses: 'Task Statuses',
+        tasks: 'Tasks',
+        labels: 'Labels',
+        signIn: 'Login',
+        signUp: 'Register',
+        signOut: 'Logout',
       },
+    },
     views: {
       session: {
         new: {

@@ -12,7 +12,7 @@ export default (app) => {
       if (err) {
         return app.httpErrors.internalServerError(err);
       }
-      
+
       if (!user) {
         // Authentication failed - render form with errors
         const signInForm = req.body.data || {};
@@ -23,7 +23,7 @@ export default (app) => {
         reply.render('session/new', { signInForm, errors });
         return reply;
       }
-      
+
       // Authentication succeeded - log in the user and redirect
       await req.logIn(user);
       req.flash('success', i18next.t('flash.session.create.success'));

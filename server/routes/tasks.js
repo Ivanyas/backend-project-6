@@ -6,20 +6,22 @@ export default (app) => {
   app
     .get('/tasks', { name: 'tasks' }, async (req, reply) => {
       let query = app.objection.models.task.query();
-      
+
       // Apply filters
-      const { status, executor, label, createdByMe } = req.query;
-      
+      const {
+        status, executor, label, createdByMe,
+      } = req.query;
+
       // Filter by status
       if (status) {
         query = query.where('statusId', status);
       }
-      
+
       // Filter by executor
       if (executor) {
         query = query.where('executorId', executor);
       }
-      
+
       // Filter by label
       if (label) {
         query = query.modify((qb) => {
@@ -27,28 +29,30 @@ export default (app) => {
             .where('task_labels.labelId', label);
         });
       }
-      
+
       // Filter by creator (only show tasks created by current user)
       if (createdByMe && req.user) {
         query = query.where('creatorId', req.user.id);
       }
-      
+
       const tasks = await query
         .withGraphFetched('[status, creator, executor, labels]')
         .orderBy('created_at', 'desc');
-      
+
       // Get filter options
       const statuses = await app.objection.models.taskStatus.query();
       const users = await app.objection.models.user.query();
       const labels = await app.objection.models.label.query();
-      
-      reply.render('tasks/index', { 
-        tasks, 
+
+      reply.render('tasks/index', {
+        tasks,
         currentUser: req.user || null,
         statuses,
         users,
         labels,
-        filters: { status, executor, label, createdByMe: createdByMe === '1' }
+        filters: {
+          status, executor, label, createdByMe: createdByMe === '1',
+        },
       });
       return reply;
     })
@@ -57,7 +61,9 @@ export default (app) => {
       const statuses = await app.objection.models.taskStatus.query();
       const users = await app.objection.models.user.query();
       const labels = await app.objection.models.label.query();
-      reply.render('tasks/new', { task, statuses, users, labels });
+      reply.render('tasks/new', {
+        task, statuses, users, labels,
+      });
       return reply;
     })
     .get('/tasks/:id', { name: 'task' }, async (req, reply) => {
@@ -79,27 +85,29 @@ export default (app) => {
       if (!task) {
         return reply.notFound();
       }
-      
+
       // Only allow creator to edit task
       if (task.creatorId !== req.user.id) {
         req.flash('error', i18next.t('flash.authError'));
         return reply.redirect(app.reverse('tasks'));
       }
-      
+
       const statuses = await app.objection.models.taskStatus.query();
       const users = await app.objection.models.user.query();
       const labels = await app.objection.models.label.query();
-      reply.render('tasks/edit', { task, statuses, users, labels });
+      reply.render('tasks/edit', {
+        task, statuses, users, labels,
+      });
       return reply;
     })
     .post('/tasks', { preValidation: app.authenticate }, async (req, reply) => {
       const task = new app.objection.models.task();
       const data = { ...req.body.data };
-      
+
       // Extract labelIds separately - it's not a task column
-      const labelIds = data.labelIds;
+      const { labelIds } = data;
       delete data.labelIds;
-      
+
       if (!data.description || data.description.trim() === '') {
         data.description = null;
       }
@@ -118,7 +126,7 @@ export default (app) => {
       }
       task.$set(data);
       task.creatorId = req.user.id;
-      
+
       // Manual validation
       const errors = {};
       if (!data.name || data.name.trim().length === 0) {
@@ -133,22 +141,26 @@ export default (app) => {
         const statuses = await app.objection.models.taskStatus.query();
         const users = await app.objection.models.user.query();
         const labels = await app.objection.models.label.query();
-        reply.render('tasks/new', { task, statuses, users, labels, errors });
+        reply.render('tasks/new', {
+          task, statuses, users, labels, errors,
+        });
         return reply;
       }
 
       try {
         await task.$validate();
         const savedTask = await app.objection.models.task.query().insert(task);
-        
+
         // Handle labels - insert one at a time for SQLite compatibility
         if (labelIds && Array.isArray(labelIds) && labelIds.length > 0) {
-          const labelIdsArray = labelIds.map(id => parseInt(id, 10)).filter(id => !isNaN(id));
-          for (const labelId of labelIdsArray) {
-            await savedTask.$relatedQuery('labels').relate(labelId);
-          }
+          const labelIdsArray = labelIds
+            .map((labelIdRaw) => parseInt(labelIdRaw, 10))
+            .filter((parsedId) => !Number.isNaN(parsedId));
+          await Promise.all(
+            labelIdsArray.map((labelId) => savedTask.$relatedQuery('labels').relate(labelId)),
+          );
         }
-        
+
         req.flash('success', i18next.t('flash.tasks.create.success'));
         reply.redirect(app.reverse('tasks'));
         return reply;
@@ -160,16 +172,16 @@ export default (app) => {
           statusId: data.statusId,
           executorId: data.executorId,
         });
-        
+
         req.flash('error', i18next.t('flash.tasks.create.error'));
         const statuses = await app.objection.models.taskStatus.query();
         const users = await app.objection.models.user.query();
         const labels = await app.objection.models.label.query();
-        reply.render('tasks/new', { task: taskForForm, statuses, users, labels, errors: {} });
+        reply.render('tasks/new', {
+          task: taskForForm, statuses, users, labels, errors: {},
+        });
         return reply;
       }
-
-      return reply;
     })
     .patch('/tasks/:id', { preValidation: app.authenticate }, async (req, reply) => {
       const { id } = req.params;
@@ -177,7 +189,7 @@ export default (app) => {
       if (!task) {
         return reply.notFound();
       }
-      
+
       // Only allow creator to update task
       if (task.creatorId !== req.user.id) {
         req.flash('error', i18next.t('flash.authError'));
@@ -185,11 +197,11 @@ export default (app) => {
       }
 
       const data = { ...req.body.data };
-      
+
       // Extract labelIds separately - it's not a task column
-      const labelIds = data.labelIds;
+      const { labelIds } = data;
       delete data.labelIds;
-      
+
       try {
         // Handle optional description field
         if ('description' in data && (!data.description || data.description.trim() === '')) {
@@ -213,31 +225,33 @@ export default (app) => {
         task.$set(data);
         await task.$validate();
         await task.$query().patch(task);
-        
+
         // Handle labels - insert one at a time for SQLite compatibility
         if (labelIds && Array.isArray(labelIds)) {
           // Remove all existing label relationships
           await task.$relatedQuery('labels').unrelate();
-          
+
           // Add new label relationships one at a time
-          const labelIdsArray = labelIds.map(id => parseInt(id, 10)).filter(id => !isNaN(id));
-          for (const labelId of labelIdsArray) {
-            await task.$relatedQuery('labels').relate(labelId);
-          }
+          const labelIdsArray = labelIds
+            .map((labelIdRaw) => parseInt(labelIdRaw, 10))
+            .filter((parsedId) => !Number.isNaN(parsedId));
+          await Promise.all(
+            labelIdsArray.map((labelId) => task.$relatedQuery('labels').relate(labelId)),
+          );
         }
-        
+
         req.flash('success', i18next.t('flash.tasks.update.success'));
         reply.redirect(app.reverse('tasks'));
       } catch (error) {
         task.$set(data);
-        
+
         // Convert validation errors to user-friendly messages
         const errors = {};
         if (error.data) {
-          Object.keys(error.data).forEach(key => {
+          Object.keys(error.data).forEach((key) => {
             const fieldErrors = error.data[key];
             if (fieldErrors && fieldErrors.length > 0) {
-              errors[key] = fieldErrors.map(err => {
+              errors[key] = fieldErrors.map((err) => {
                 switch (err.keyword) {
                   case 'required':
                     return { message: i18next.t(`flash.validation.${key}`) };
@@ -250,12 +264,14 @@ export default (app) => {
             }
           });
         }
-        
+
         req.flash('error', i18next.t('flash.tasks.update.error'));
         const statuses = await app.objection.models.taskStatus.query();
         const users = await app.objection.models.user.query();
         const labels = await app.objection.models.label.query();
-        reply.render('tasks/edit', { task, statuses, users, labels, errors });
+        reply.render('tasks/edit', {
+          task, statuses, users, labels, errors,
+        });
       }
       return reply;
     })
@@ -265,13 +281,13 @@ export default (app) => {
       if (!task) {
         return reply.notFound();
       }
-      
+
       // Only allow creator to delete task
       if (task.creatorId !== req.user.id) {
         req.flash('error', i18next.t('flash.authError'));
         return reply.redirect(app.reverse('tasks'));
       }
-      
+
       try {
         await app.objection.models.task.query().deleteById(id);
         req.flash('success', i18next.t('flash.tasks.delete.success'));
