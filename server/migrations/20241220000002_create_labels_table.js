@@ -10,4 +10,3 @@ export const up = (knex) => (
 );
 
 export const down = (knex) => knex.schema.dropTable('labels');
-

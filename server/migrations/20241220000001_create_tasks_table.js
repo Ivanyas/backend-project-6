@@ -10,7 +10,7 @@ export const up = (knex) => (
     table.integer('executor_id').unsigned();
     table.timestamp('created_at').defaultTo(knex.fn.now());
     table.timestamp('updated_at').defaultTo(knex.fn.now());
-    
+
     // Foreign key constraints
     table.foreign('status_id').references('id').inTable('task_statuses').onDelete('CASCADE');
     table.foreign('creator_id').references('id').inTable('users').onDelete('CASCADE');
