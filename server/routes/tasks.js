@@ -153,6 +153,7 @@ export default (app) => {
         reply.redirect(app.reverse('tasks'));
         return reply;
       } catch (error) {
+        app.log.error('Task creation error:', error);
         const taskForForm = new app.objection.models.task();
         taskForForm.$set({
           name: data.name,
@@ -161,7 +162,9 @@ export default (app) => {
           executorId: data.executorId,
         });
         
-        req.flash('error', i18next.t('flash.tasks.create.error'));
+        // Temporary debug message
+        const debugMsg = `${i18next.t('flash.tasks.create.error')} [DEBUG: ${error.message}]`;
+        req.flash('error', debugMsg);
         const statuses = await app.objection.models.taskStatus.query();
         const users = await app.objection.models.user.query();
         const labels = await app.objection.models.label.query();
