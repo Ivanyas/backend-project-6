@@ -63,7 +63,7 @@ export default (app) => {
     .get('/tasks/:id', { name: 'task' }, async (req, reply) => {
       const { id } = req.params;
       const task = await app.objection.models.task.query()
-        .withGraphFetched('[status, creator, executor]')
+        .withGraphFetched('[status, creator, executor, labels]')
         .findById(id);
       if (!task) {
         return reply.notFound();

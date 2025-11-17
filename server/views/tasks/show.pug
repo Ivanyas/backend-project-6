@@ -30,5 +30,13 @@ block content
               th= t('views.tasks.executor')
               td= task.executor ? (task.executor.firstName + ' ' + task.executor.lastName) : t('views.tasks.noExecutor')
             tr
+              th= t('views.tasks.labels')
+              td
+                if task.labels && task.labels.length > 0
+                  each label in task.labels
+                    span.badge.bg-info.me-1= label.name
+                else
+                  = '-'
+            tr
               th= t('views.tasks.createdAt')
               td= formatDate(task.createdAt)
