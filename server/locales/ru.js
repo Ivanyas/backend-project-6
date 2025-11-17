@@ -179,6 +179,9 @@ export default {
         edit: 'Изменение метки',
         delete: 'Удалить',
         submit: 'Создать',
+        editSubmit: 'Изменить',
+        editButton: 'Изменить',
+        deleteButton: 'Удалить',
         tasksLinked: 'Эта метка связана с {{count}} задачей (задачами)',
       },
       welcome: {

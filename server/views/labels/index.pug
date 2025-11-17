@@ -23,6 +23,6 @@ block content
           td= formatDate(label.createdAt)
           td
             if isAuthenticated()
-              a.btn.btn-sm.btn-outline-primary.me-2(href=`/labels/${label.id}/edit`)= t('views.labels.edit')
-              +buttonTo(`/labels/${label.id}`, 'delete')(class='btn btn-sm btn-outline-danger' value=t('views.labels.delete'))
+              a.btn.btn-sm.btn-outline-primary.me-2(href=`/labels/${label.id}/edit`)= t('views.labels.editButton')
+              +buttonTo(`/labels/${label.id}`, 'delete')(class='btn btn-sm btn-outline-danger' value=t('views.labels.deleteButton'))
 

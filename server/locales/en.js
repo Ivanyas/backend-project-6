@@ -169,6 +169,9 @@ export default {
         edit: 'Edit Label',
         delete: 'Delete',
         submit: 'Save',
+        editSubmit: 'Edit',
+        editButton: 'Edit',
+        deleteButton: 'Delete',
         tasksLinked: 'This label is linked to {{count}} task(s)',
       },
       welcome: {
