@@ -93,6 +93,7 @@ export default (app) => {
       return reply;
     })
     .post('/tasks', { preValidation: app.authenticate }, async (req, reply) => {
+      app.log.info('POST /tasks - Request body:', req.body);
       const task = new app.objection.models.task();
       const data = { ...req.body.data };
       if (!data.description || data.description.trim() === '') {
@@ -110,6 +111,7 @@ export default (app) => {
       }
       task.$set(data);
       task.creatorId = req.user.id;
+      app.log.info('Task object before save:', { name: task.name, statusId: task.statusId, creatorId: task.creatorId });
       
       // Manual validation
       const errors = {};
@@ -146,8 +148,9 @@ export default (app) => {
         reply.redirect(app.reverse('tasks'));
         return reply;
       } catch (error) {
-        console.error('Task creation error:', error);
-        console.error('Task data:', { name: data.name, statusId: data.statusId, creatorId: req.user?.id });
+        app.log.error('Task creation error:', error);
+        app.log.error('Task data:', { name: data.name, statusId: data.statusId, creatorId: req.user?.id, labelIds: data.labelIds });
+        app.log.error('Error details:', { message: error.message, data: error.data, type: error.type });
         const taskForForm = new app.objection.models.task();
         taskForForm.$set({
           name: data.name,
